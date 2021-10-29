@@ -1,0 +1,34 @@
+{
+  "name": "brace/dbg",
+  "description": "Brace Debugging Environment",
+  "license": "MIT",
+  "homepage": "https://infracamp.org/project/phore",
+  "authors": [
+    { "name": "Matthias Leuffen", "email": "m@tth.es" }
+  ],
+  "repositories": [
+  ],
+  "require": {
+    "php": ">=8.0",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "phore/tester": "*"
+  },
+  "suggest": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Brace\\Dbg\\": "src/"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  },
+  "autoload-dev": {
+  },
+  "minimum-stability": "dev",
+  "config": {
+    "preferred-install": "source"
+  }
+}
