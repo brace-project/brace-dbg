@@ -30,7 +30,7 @@ class BraceDbg
         set_error_handler(function ($errNo, $errStr, $errFile, $errLine) {
             $msg = "$errStr in $errFile on line $errLine";
             if ($errNo == E_NOTICE || $errNo == E_WARNING) {
-                throw new \ErrorException($msg, $errNo);
+                throw new \Error($msg, $errNo);
             } else {
             }
         });
