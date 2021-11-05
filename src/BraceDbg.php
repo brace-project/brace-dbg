@@ -29,13 +29,15 @@ class BraceDbg
     {
         set_error_handler(function ($errNo, $errStr, $errFile, $errLine) {
             $msg = "$errStr in $errFile on line $errLine";
-            if ($errNo == E_NOTICE || $errNo == E_WARNING) {
-                throw new \Error($msg, $errNo);
-            } else {
-            }
-        });
+            echo $errNo . " ";
+            out("error triggered", $msg);
 
-        set_exception_handler(function (\Exception|\Error $ex) use ($verbose) {
+            throw new \Error($msg, $errNo);
+
+        }, E_NOTICE | E_WARNING | E_ERROR | E_RECOVERABLE_ERROR | E_COMPILE_ERROR | E_COMPILE_WARNING);
+
+
+        set_exception_handler($handler = function (\Exception|\Error $ex, string $file=null, int $line=null) use ($verbose) {
             header("Content-Type: text/plain");
             header("HTTP/1.1 500 Internal Server Error");
             echo "HTTP/1.1 500 Internal Server Error";
@@ -48,7 +50,7 @@ class BraceDbg
                     echo "\n\n---";
                     echo "\n" . get_class($previous) . " Msg: '{$previous->getMessage()}' Code: {$previous->getCode()}\n";
 
-                    echo "\nin file: " . $previous->getFile() . "(". $previous->getLine().")";
+                    echo "\nin file: " . ($file ?? $previous->getFile()) . "(". ($line ?? $previous->getLine()).")";
                     echo "\n\n";
                     echo $previous->getTraceAsString();
                     echo "\n===";
@@ -58,6 +60,17 @@ class BraceDbg
             }
             throw $ex;
         });
+
+        // error_handler won't process compile errors. Handle it here.
+        register_shutdown_function(function () use ($handler) {
+            $last = error_get_last();
+            if ($last === null)
+                return;
+            if ($last["type"] === E_COMPILE_ERROR)
+                $handler(new \Error($last["message"], $last["type"]), $last["file"], $last["line"]);
+        });
+
+
     }
 
     private static function isDevModeAutodetect(array $allowHosts) : bool
@@ -97,7 +110,7 @@ class BraceDbg
         if ($logger === null && self::$developmentMode) {
             self::registerDefaultLogger($log_file);
         }
-        out(self::$developmentMode);
+        
         self::_setupErrorHandler(self::$developmentMode);
     }
 
