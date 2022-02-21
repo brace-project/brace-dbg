@@ -27,19 +27,14 @@ class BraceDbg
 
     private static function _setupErrorHandler(bool $verbose = false)
     {
-        set_error_handler(function ($errNo, $errStr, $errFile, $errLine) {
-            $msg = "$errStr in $errFile on line $errLine";
-            echo $errNo . " ";
-            out("error triggered", $msg);
 
-            throw new \Error($msg, $errNo);
-
-        }, E_NOTICE | E_WARNING | E_ERROR | E_RECOVERABLE_ERROR | E_COMPILE_ERROR | E_COMPILE_WARNING);
 
 
         set_exception_handler($handler = function (\Exception|\Error $ex, string $file=null, int $line=null) use ($verbose) {
-            header("Content-Type: text/plain");
-            header("HTTP/1.1 500 Internal Server Error");
+            if ( ! headers_sent()) {
+                header("Content-Type: text/plain");
+                header("HTTP/1.1 500 Internal Server Error");
+            }
             echo "HTTP/1.1 500 Internal Server Error";
 
             if ($verbose === true) {
@@ -60,6 +55,11 @@ class BraceDbg
             }
             throw $ex;
         });
+
+        set_error_handler(function ($errNo, $errStr, $errFile, $errLine) use ($handler) {
+            $e = new \Error($errStr, $errNo);
+            $handler($e, $errFile, $errLine);
+        }, E_NOTICE | E_WARNING | E_ERROR | E_RECOVERABLE_ERROR | E_COMPILE_ERROR | E_COMPILE_WARNING);
 
         // error_handler won't process compile errors. Handle it here.
         register_shutdown_function(function () use ($handler) {
@@ -110,7 +110,7 @@ class BraceDbg
         if ($logger === null && self::$developmentMode) {
             self::registerDefaultLogger($log_file);
         }
-        
+
         self::_setupErrorHandler(self::$developmentMode);
     }
 
