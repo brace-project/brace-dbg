@@ -105,7 +105,7 @@ class BraceDbg
             foreach ($params as $param) {
                 $ret[] = self::GetType($param);
             }
-            file_put_contents("php://stderr", "out(" . implode(", ", $ret) . ");\n");
+            file_put_contents("php://stderr", str_replace("\n", "\r\n", "out(" . implode(", ", $ret) . ");\n"));
         };
     }
 
