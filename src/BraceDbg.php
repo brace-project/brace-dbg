@@ -2,6 +2,8 @@
 
 namespace Brace\Dbg;
 
+use Brace\Core\EnvironmentType;
+
 class BraceDbg
 {
 
@@ -112,6 +114,8 @@ class BraceDbg
 
     public static bool $developmentMode = false;
 
+    public static EnvironmentType $environmentType;
+
     public static \Closure|bool $logger = false;
 
     public static function SetupEnvironment(
@@ -124,6 +128,12 @@ class BraceDbg
         if ($autodetect_developement_mode) {
             self::$developmentMode = self::isDevModeAutodetect($development_mode_hosts);
         }
+        if (self::$developmentMode) {
+            self::$environmentType = EnvironmentType::DEVELOPMENT;
+        } else {
+            self::$environmentType = EnvironmentType::PRODUCTION;
+        }
+
 
         if ($logger === null && self::$developmentMode) {
             self::registerDefaultLogger($log_file);
