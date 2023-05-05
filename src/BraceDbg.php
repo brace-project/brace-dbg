@@ -91,14 +91,19 @@ class BraceDbg
 
     }
 
-    private static function isDevModeAutodetect(array $allowHosts) : bool
-    {
+    private static function detectEnvironment(array $allowHosts) : EnvironmentType {
         if (php_sapi_name() === "cli")
-            return true;
+            return EnvironmentType::DEVELOPMENT;
         if ( ! isset ($_SERVER["HTTP_HOST"]))
-            return false;
-        return in_array($_SERVER["HTTP_HOST"], $allowHosts);
+            return EnvironmentType::PRODUCTION;
+        if (array_key_exists($_SERVER["HTTP_HOST"], $allowHosts))
+            return $allowHosts[$_SERVER["HTTP_HOST"]];
+        if (in_array($_SERVER["HTTP_HOST"], $allowHosts))
+            return EnvironmentType::DEVELOPMENT;
+
+        return EnvironmentType::PRODUCTION;
     }
+
 
     private static function registerDefaultLogger(string $log_file="php://stderr")
     {
@@ -126,20 +131,21 @@ class BraceDbg
     ) {
 
         if ($autodetect_developement_mode) {
-            self::$developmentMode = self::isDevModeAutodetect($development_mode_hosts);
-        }
-        if (self::$developmentMode) {
-            self::$environmentType = EnvironmentType::DEVELOPMENT;
+            self::$environmentType = self::detectEnvironment($development_mode_hosts);
+            self::$developmentMode = self::$environmentType === EnvironmentType::DEVELOPMENT;
         } else {
             self::$environmentType = EnvironmentType::PRODUCTION;
+            self::$developmentMode = false;
         }
 
 
-        if ($logger === null && self::$developmentMode) {
+
+        if (self::$environmentType !== EnvironmentType::PRODUCTION) {
+            self::_setupErrorHandler(true);
             self::registerDefaultLogger($log_file);
+        } else {
+            self::_setupErrorHandler(false); // Be silent on Production
         }
-
-        self::_setupErrorHandler(self::$developmentMode);
     }
 
 }
