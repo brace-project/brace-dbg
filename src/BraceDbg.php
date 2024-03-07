@@ -75,8 +75,8 @@ class BraceDbg
         });
 
         set_error_handler(function ($errNo, $errStr, $errFile, $errLine) use ($handler) {
-            $e = new \Error($errStr, $errNo);
-            $handler($e, $errFile, $errLine);
+            throw new \Error($errStr . " in $errFile line $errLine", $errNo); // Throw error to be catched by exception handler
+            
         }, E_NOTICE | E_WARNING | E_ERROR | E_RECOVERABLE_ERROR | E_COMPILE_ERROR | E_COMPILE_WARNING);
 
         // error_handler won't process compile errors. Handle it here.
