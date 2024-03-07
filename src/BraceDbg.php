@@ -75,7 +75,7 @@ class BraceDbg
         });
 
         set_error_handler(function ($errNo, $errStr, $errFile, $errLine) use ($handler) {
-            throw new \Error($errStr . " in $errFile line $errLine", $errNo); // Throw error to be catched by exception handler
+            throw new \Error($errStr . " in $errFile line $errLine", $errNo);   // Throw error to be catched by exception handler (makes Exceptions handlebar)
             
         }, E_NOTICE | E_WARNING | E_ERROR | E_RECOVERABLE_ERROR | E_COMPILE_ERROR | E_COMPILE_WARNING);
 
