@@ -37,12 +37,12 @@ class BraceDbg
 
             if ($verbose === true) {
                 $previous = $ex;
-                $msg .=  "\n\nUncaught " . get_class($ex) . ": " . $ex->getMessage();
+                $msg .=  "\n\nUncaught " . get_class($ex) . " ";
 
 
                 $msg .=  " in '" . ($file ?? $ex->getFile()) . "' on line '" . ($line ?? $previous->getLine()) ."' ";
 
-
+                
                 while ($previous !== null) {
                     $msg .=  "\n\n---";
                     $msg .=  "\n" . get_class($previous) . " Msg: '{$previous->getMessage()}' Code: {$previous->getCode()}\n";
