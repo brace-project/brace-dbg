@@ -25,8 +25,8 @@ class BraceDbg
         }
         return get_debug_type($input);
     }
-    
-    
+
+
     private static function _setupErrorHandler(bool $verbose = false)
     {
 
@@ -42,7 +42,7 @@ class BraceDbg
 
                 $msg .=  " in '" . ($file ?? $ex->getFile()) . "' on line '" . ($line ?? $previous->getLine()) ."' ";
 
-                
+
                 while ($previous !== null) {
                     $msg .=  "\n\n---";
                     $msg .=  "\n" . get_class($previous) . " Msg: '{$previous->getMessage()}' Code: {$previous->getCode()}\n";
@@ -51,7 +51,7 @@ class BraceDbg
                     $msg .=  "\n\n";
                     $msg .=  $previous->getTraceAsString();
                     $msg .=  "\n===";
-                    
+
                     $msg .= BraceDbg::ColorOutput("\n\nError: ", 31, true);
                     $msg .=  BraceDbg::ColorOutput("'{$previous->getMessage()}'", null, true);
                     $previous = $previous->getPrevious();
@@ -79,7 +79,7 @@ class BraceDbg
 
         set_error_handler(function ($errNo, $errStr, $errFile, $errLine) use ($handler) {
             throw new \Error($errStr . " in $errFile line $errLine", $errNo);   // Throw error to be catched by exception handler (makes Exceptions handlebar)
-            
+
         }, E_NOTICE | E_WARNING | E_ERROR | E_RECOVERABLE_ERROR | E_COMPILE_ERROR | E_COMPILE_WARNING);
 
         // error_handler won't process compile errors. Handle it here.
@@ -122,7 +122,7 @@ class BraceDbg
 
     public static bool $developmentMode = false;
 
-    public static EnvironmentType $environmentType;
+    public static EnvironmentType $environmentType = EnvironmentType::DEVELOPMENT;
 
     public static \Closure|bool $logger = false;
 
@@ -155,7 +155,7 @@ class BraceDbg
         if ( ! function_exists("posix_isatty")) {
             return $text;
         }
-        
+
         if ( ! posix_isatty("php://stdout")) {
             return $text;
         }
@@ -195,11 +195,11 @@ class BraceDbg
 
         // Strip escape sequences from $text
         $text = preg_replace("/\e\[[0-9;]*m/", "", $text);
-        
+
         // Append the actual text and reset formatting at the end
         $formattedText .= $text . "\e[0m"; // Reset to default
 
         return $formattedText;
     }
-    
+
 }
