@@ -152,7 +152,11 @@ class BraceDbg
     }
 
     public static function ColorOutput(string $text, int $color = null, bool $bold = false, bool $italic = false): string {
-        if (function_exists("posix_isatty") && ! posix_isatty("php://stdout")) {
+        if ( ! function_exists("posix_isatty")) {
+            return $text;
+        }
+        
+        if ( ! posix_isatty("php://stdout")) {
             return $text;
         }
         // ANSI escape sequences for colors
