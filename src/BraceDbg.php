@@ -60,7 +60,7 @@ class BraceDbg
             } else {
                 $msg = $ex->getMessage();
             }
-            //echo $msg;
+
 
             if(php_sapi_name() !== "cli") {
                 if (!headers_sent()) {
