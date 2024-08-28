@@ -69,7 +69,7 @@ class BraceDbg
                 }
                 echo("HTTP/1.1 500 Internal Server Error" . $msg);
                 ini_set("display_errors", 0);
-                trigger_error($msg, E_USER_ERROR);
+                trigger_error("Error '$msg' triggered in ExceptionHandler! Backtrace\n" . $ex->getTraceAsString(), E_USER_ERROR);
             } else {
                 ini_set("display_errors", 0);
                 echo $msg;
