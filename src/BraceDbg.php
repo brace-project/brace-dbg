@@ -156,7 +156,7 @@ class BraceDbg
             return $text;
         }
 
-        if ( ! posix_isatty("php://stdout")) {
+        if ( ! posix_isatty(fopen("php://stdout", "w"))) {
             return $text;
         }
         // ANSI escape sequences for colors
